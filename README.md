@@ -5,8 +5,8 @@ Android app for displaying movies using OMDb Api https://www.omdbapi.com/
 How to run the application using a real device
 
 
-Running the app : [0]
-[0]: https://developer.android.com/training/basics/firstapp/running-app
+Running the app : https://developer.android.com/training/basics/firstapp/running-app
+
 Set up your device as follows: 
 
 Connect your device to your development machine with a USB cable. If you developed on Windows, you might need to install the appropriate USB driver for your device.
