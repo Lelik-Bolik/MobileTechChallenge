@@ -15,8 +15,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.mockito.Mockito
-import java.util.*
-import java.util.stream.Stream
 
 class MovieUnitTest {
 
@@ -26,10 +24,10 @@ class MovieUnitTest {
     lateinit var detailsRepo : FakeMovieDetailsRepository
     lateinit var viewmodel: FakeMovieListViewModel
     lateinit var detailsViewmodel: FakeMovieDetailsViewModel
-    lateinit var streamId : String
+
     @Before
     fun setup(){
-        streamId = UUID.randomUUID().toString()
+
         repository = FakeMovieListRepository()
         detailsRepo = FakeMovieDetailsRepository()
         viewmodel = FakeMovieListViewModel(repository)
@@ -47,7 +45,6 @@ class MovieUnitTest {
             if(movie.imdbID == id){
                 movie?.let(observer)
             }
-//            streams?.let(observer)
         }
     }
 
@@ -58,34 +55,33 @@ class MovieUnitTest {
 
     @Test
     fun testMovies() {
-        val observerMovieDetails = lambdaMock<(MovieDetailsDB) -> Unit>()
         val observerMovie = lambdaMock<(MovieDBResult) -> Unit>()
         val lifecycle = LifecycleRegistry(Mockito.mock(LifecycleOwner::class.java))
         lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-
         observeMovieResultChanges(repository.queryToBeAdded,repository.pageToBeAdded,"-1", lifecycle, observerMovie)
         repository.fetchMovies(repository.queryToBeAdded, repository.pageToBeAdded)
-
         // verify that it is added and it is the same list that is being updated meaning the repository works!
         viewmodel.mutableLiveData.value?.let {
             assert(it.size == 2)
             Mockito.verify(observerMovie).invoke(it.last())
         }
+    }
 
-
+    @Test
+    fun testMovieDetails() {
+        val observerMovieDetails = lambdaMock<(MovieDetailsDB) -> Unit>()
+        val lifecycle = LifecycleRegistry(Mockito.mock(LifecycleOwner::class.java))
+        lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         observeMovieDetailChanges("tt0848228", lifecycle, observerMovieDetails)
-
         detailsViewmodel.getMovieDetails("tt0848228").value?.let {
             assert(it.imdbID == "tt0848228")
         }
         observeMovieDetailChanges("tt4154756", lifecycle, observerMovieDetails)
         detailsViewmodel.fetchMovieDetails("tt4154756")
-
         detailsViewmodel.getMovieDetails("tt4154756").value?.let {
             assert(it.imdbID == "tt4154756")
         }
         //tt4154756
-
     }
 
 }
